@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pillow
+pytesseract
+easyocr
+pymongo
+motor
+python-multipart
+loguru
+pytest

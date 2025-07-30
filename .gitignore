@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+.env
+.venv
+venv/
+build/
+dist/
+.eggs/
+*.egg-info/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+tests/large.jpg
+
+# Docker
+*.log
+
+# Ignore model weights if not needed in repo
+*.pt
+
+# Ignore local database dumps
+*.sqlite3
+*.db
+
+# Ignore environment files
+.env.*
+
+# Ignore coverage reports
+htmlcov/
+.coverage
+
+# Ignore static analysis
+.mypy_cache/
+.pytest_cache/
+
+# Ignore uploads
+uploads/

@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green AI - Smart Product Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            padding: 32px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.05) 10px,
+                rgba(255, 255, 255, 0.05) 20px
+            );
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(-50px) translateY(-50px); }
+            100% { transform: translateX(50px) translateY(50px); }
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 32px;
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 6px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 16px 24px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .upload-section {
+            display: block;
+        }
+
+        .upload-section.hidden {
+            display: none;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .file-input {
+            width: 100%;
+            height: 120px;
+            border: 2px dashed #d1d5db;
+            border-radius: 16px;
+            background: #f9fafb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-input:hover {
+            border-color: #4ade80;
+            background: #f0fdf4;
+        }
+
+        .file-input.dragover {
+            border-color: #22c55e;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            transform: scale(1.02);
+        }
+
+        .file-input-text {
+            color: #6b7280;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .file-input-subtext {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .file-input input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .camera-section {
+            display: none;
+            text-align: center;
+        }
+
+        .camera-section.active {
+            display: block;
+        }
+
+        .camera-container {
+            position: relative;
+            display: inline-block;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .camera-video {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .camera-canvas {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: linear-gradient(45deg, transparent 40%, rgba(74, 222, 128, 0.1) 50%, transparent 60%);
+            animation: scan 3s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .camera-guide {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .camera-controls {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .spinner {
+            display: none;
+            width: 48px;
+            height: 48px;
+            border: 4px solid #f1f5f9;
+            border-top: 4px solid #4ade80;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 32px auto;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            display: none;
+            margin-top: 32px;
+            padding: 24px;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 16px;
+            border: 1px solid #bbf7d0;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-section {
+            margin-bottom: 24px;
+        }
+
+        .result-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-title {
+            font-weight: 700;
+            color: #166534;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .result-text {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #d1fae5;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #374151;
+            white-space: pre-wrap;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .results-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f3f4f6;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .results-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .confidence-low {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .confidence-medium {
+            color: #d97706;
+            font-weight: 600;
+        }
+
+        .confidence-high {
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .error-message {
+            color: #dc2626;
+            background: #fef2f2;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #fecaca;
+            margin-top: 16px;
+            font-weight: 500;
+        }
+
+        .warning-message {
+            color: #d97706;
+            background: #fffbeb;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid #fed7aa;
+            margin-top: 16px;
+            font-weight: 500;
+        }
+
+        .metrics-dashboard {
+            margin-top: 48px;
+            display: none;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .metrics-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .metrics-subtitle {
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        .metrics-chart {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .metrics-summary {
+            margin-top: 16px;
+            color: #4b5563;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+
+            .header {
+                padding: 24px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 24px 20px;
+            }
+
+            .camera-video {
+                max-width: 100%;
+                height: 240px;
+            }
+
+            .camera-controls {
+                gap: 8px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+
+            .results-table {
+                font-size: 0.8rem;
+            }
+
+            .results-table th,
+            .results-table td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 Green AI</h1>
+            <p>Smart Product Analysis & OCR</p>
+        </div>
+
+        <div class="content">
+            <div class="tabs">
+                <button id="uploadTab" class="tab-btn active">📁 Upload Image</button>
+                <button id="captureTab" class="tab-btn">📸 Live Capture</button>
+            </div>
+
+            <form id="uploadForm" class="upload-section">
+                <div class="file-input-wrapper">
+                    <div class="file-input" id="fileInput">
+                        <div class="file-input-text">📎 Drop your image here or click to browse</div>
+                        <div class="file-input-subtext">JPG, PNG • Max 5MB</div>
+                        <input type="file" id="fileUpload" accept="image/jpeg,image/png" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    🔍 Analyze Image
+                </button>
+            </form>
+
+            <div id="cameraSection" class="camera-section">
+                <div class="camera-container">
+                    <video id="cameraVideo" class="camera-video" autoplay playsinline></video>
+                    <canvas id="captureCanvas" class="camera-canvas"></canvas>
+                    <div class="camera-overlay"></div>
+                    <div class="camera-guide">Position product in center of frame</div>
+                </div>
+                
+                <div class="camera-controls">
+                    <button id="captureBtn" type="button" class="btn btn-primary">
+                        📸 Capture
+                    </button>
+                    <button id="confirmBtn" type="button" class="btn btn-primary" style="display:none;">
+                        ✅ Analyze
+                    </button>
+                    <button id="retakeBtn" type="button" class="btn btn-secondary" style="display:none;">
+                        🔄 Retake
+                    </button>
+                </div>
+                
+                <div id="cameraError" class="error-message" style="display:none;"></div>
+            </div>
+
+            <div class="spinner" id="loadingSpinner"></div>
+            
+            <div id="resultsContainer" class="result"></div>
+
+            <div id="metricsContainer" class="metrics-dashboard">
+                <h3 class="metrics-title">📊 Live System Metrics</h3>
+                <p class="metrics-subtitle">Rolling averages from last 100 processed images</p>
+                <canvas id="metricsChart" class="metrics-chart" width="520" height="220"></canvas>
+                <div id="metricsSummary" class="metrics-summary"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab management
+        const uploadTab = document.getElementById('uploadTab');
+        const captureTab = document.getElementById('captureTab');
+        const uploadForm = document.getElementById('uploadForm');
+        const cameraSection = document.getElementById('cameraSection');
+        let retakeCount = 0;
+
+        function switchTab(tab) {
+            if (tab === 'upload') {
+                uploadForm.classList.remove('hidden');
+                cameraSection.classList.remove('active');
+                uploadTab.classList.add('active');
+                captureTab.classList.remove('active');
+                stopCamera();
+            } else {
+                uploadForm.classList.add('hidden');
+                cameraSection.classList.add('active');
+                uploadTab.classList.remove('active');
+                captureTab.classList.add('active');
+                startCamera();
+            }
+        }
+
+        uploadTab.addEventListener('click', () => switchTab('upload'));
+        captureTab.addEventListener('click', () => switchTab('capture'));
+
+        // File upload handling
+        const fileInput = document.getElementById('fileInput');
+        const fileUpload = document.getElementById('fileUpload');
+
+        fileInput.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileInput.classList.add('dragover');
+        });
+
+        fileInput.addEventListener('dragleave', () => {
+            fileInput.classList.remove('dragover');
+        });
+
+        fileInput.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileInput.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                fileUpload.files = files;
+                updateFileInputText(files[0].name);
+            }
+        });
+
+        fileUpload.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                updateFileInputText(e.target.files[0].name);
+            }
+        });
+
+        function updateFileInputText(filename) {
+            const textEl = fileInput.querySelector('.file-input-text');
+            textEl.textContent = `📎 ${filename}`;
+        }
+
+        // --- Real-time blur/brightness check for uploads ---
+        let uploadImageQuality = null;
+        let uploadOverrideAllowed = false;
+        const uploadErrorDiv = document.createElement('div');
+        uploadErrorDiv.className = 'error-message';
+        uploadErrorDiv.style.display = 'none';
+        fileInput.parentNode.appendChild(uploadErrorDiv);
+
+        fileUpload.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                updateFileInputText(e.target.files[0].name);
+                checkUploadImageQuality(e.target.files[0]);
+            }
+        });
+
+        function checkUploadImageQuality(file) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const img = new window.Image();
+                img.onload = function() {
+                    const canvasTmp = document.createElement('canvas');
+                    canvasTmp.width = img.width;
+                    canvasTmp.height = img.height;
+                    const ctx = canvasTmp.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    const quality = assessImageQuality(ctx, img.width, img.height);
+                    uploadImageQuality = quality;
+                    // Thresholds (same as camera)
+                    const minSharpness = 100;
+                    const minBrightness = 40;
+                    const minContrast = 20;
+                    let issues = [];
+                    if (quality.sharpness < minSharpness) issues.push('Image appears blurry');
+                    if (quality.brightness < minBrightness) issues.push('Image is too dark');
+                    if (quality.contrast < minContrast) issues.push('Image has low contrast');
+                    if (issues.length > 0) {
+                        uploadErrorDiv.textContent = issues.join('. ') + '. Please adjust lighting and hold camera steady.';
+                        uploadErrorDiv.style.display = 'block';
+                        uploadOverrideAllowed = true;
+                        // Add override checkbox
+                        if (!document.getElementById('overrideUpload')) {
+                            const override = document.createElement('label');
+                            override.style.display = 'block';
+                            override.style.marginTop = '10px';
+                            override.innerHTML = '<input type="checkbox" id="overrideUpload"> Send anyway (may fail)';
+                            uploadErrorDiv.appendChild(override);
+                            document.getElementById('overrideUpload').addEventListener('change', function() {
+                                uploadOverrideAllowed = this.checked;
+                            });
+                        }
+                    } else {
+                        uploadErrorDiv.style.display = 'none';
+                        uploadOverrideAllowed = false;
+                        if (document.getElementById('overrideUpload')) {
+                            document.getElementById('overrideUpload').parentNode.remove();
+                        }
+                    }
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Camera functionality
+        const video = document.getElementById('cameraVideo');
+        const canvas = document.getElementById('captureCanvas');
+        const captureBtn = document.getElementById('captureBtn');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+        const cameraError = document.getElementById('cameraError');
+        let stream = null;
+        let capturedBlob = null;
+
+        async function startCamera() {
+            cameraError.style.display = 'none';
+            try {
+                stopCamera();
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' }, 
+                    audio: false 
+                });
+                video.srcObject = stream;
+                resetCameraControls();
+            } catch (err) {
+                showError('Camera unavailable or permission denied. Please use Upload Image instead.');
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+        }
+
+        function resetCameraControls() {
+            canvas.style.display = 'none';
+            video.style.display = 'block';
+            captureBtn.style.display = '';
+            confirmBtn.style.display = 'none';
+            retakeBtn.style.display = 'none';
+            capturedBlob = null;
+        }
+
+        function showError(message) {
+            cameraError.textContent = message;
+            cameraError.style.display = 'block';
+        }
+
+        // Image quality assessment
+        function assessImageQuality(ctx, width, height) {
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            
+            // Convert to grayscale and calculate metrics
+            const grayscale = [];
+            let totalBrightness = 0;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                grayscale.push(gray);
+                totalBrightness += gray;
+            }
+            
+            const brightness = totalBrightness / grayscale.length;
+            
+            // Simple blur detection using Laplacian variance
+            const laplacianVariance = calculateLaplacianVariance(grayscale, width, height);
+            
+            // Calculate contrast (standard deviation)
+            const mean = brightness;
+            let variance = 0;
+            for (const gray of grayscale) {
+                variance += (gray - mean) ** 2;
+            }
+            const contrast = Math.sqrt(variance / grayscale.length);
+            
+            return { brightness, contrast, sharpness: laplacianVariance };
+        }
+
+        function calculateLaplacianVariance(grayscale, width, height) {
+            const laplacian = [];
+            const kernel = [0, 1, 0, 1, -4, 1, 0, 1, 0];
+            
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    let sum = 0;
+                    for (let ky = -1; ky <= 1; ky++) {
+                        for (let kx = -1; kx <= 1; kx++) {
+                            const idx = (y + ky) * width + (x + kx);
+                            const kernelIdx = (ky + 1) * 3 + (kx + 1);
+                            sum += grayscale[idx] * kernel[kernelIdx];
+                        }
+                    }
+                    laplacian.push(sum);
+                }
+            }
+            
+            const mean = laplacian.reduce((a, b) => a + b, 0) / laplacian.length;
+            const variance = laplacian.reduce((acc, val) => acc + (val - mean) ** 2, 0) / laplacian.length;
+            
+            return variance;
+        }
+
+        // Camera event handlers
+        captureBtn.addEventListener('click', () => {
+            if (!stream) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            
+            // Assess image quality
+            const quality = assessImageQuality(ctx, canvas.width, canvas.height);
+            
+            // Quality thresholds
+            const minSharpness = 100;
+            const minBrightness = 40;
+            const minContrast = 20;
+            
+            let qualityIssues = [];
+            if (quality.sharpness < minSharpness) qualityIssues.push('Image appears blurry');
+            if (quality.brightness < minBrightness) qualityIssues.push('Image is too dark');
+            if (quality.contrast < minContrast) qualityIssues.push('Image has low contrast');
+            
+            if (qualityIssues.length > 0) {
+                showError(qualityIssues.join('. ') + '. Please adjust lighting and hold camera steady.');
+                retakeBtn.style.display = '';
+                confirmBtn.style.display = 'none';
+                captureBtn.style.display = 'none';
+            } else {
+                cameraError.style.display = 'none';
+                canvas.style.display = 'block';
+                video.style.display = 'none';
+                captureBtn.style.display = 'none';
+                confirmBtn.style.display = '';
+                retakeBtn.style.display = '';
+                
+                canvas.toBlob(blob => {
+                    capturedBlob = blob;
+                }, 'image/jpeg', 0.9);
+            }
+        });
+
+        retakeBtn.addEventListener('click', () => {
+            retakeCount++;
+            resetCameraControls();
+        });
+
+        confirmBtn.addEventListener('click', async () => {
+            if (!capturedBlob) return;
+            stopCamera();
+            
+            const formData = new FormData();
+            formData.append('file', capturedBlob, 'live_capture.jpg');
+            formData.append('source', 'live_capture');
+            formData.append('retake_count', retakeCount);
+            
+            await processImage(formData);
+            retakeCount = 0;
+        });
+
+        // Form submission
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!fileUpload.files.length) return;
+            // Block submission if blurry/dark and not overridden
+            if (uploadImageQuality) {
+                const minSharpness = 100, minBrightness = 40, minContrast = 20;
+                if ((uploadImageQuality.sharpness < minSharpness || uploadImageQuality.brightness < minBrightness || uploadImageQuality.contrast < minContrast) && !uploadOverrideAllowed) {
+                    uploadErrorDiv.textContent = 'Image appears blurry or poorly lit. Please adjust lighting and hold camera steady.';
+                    uploadErrorDiv.style.display = 'block';
+                    return;
+                }
+            }
+            const formData = new FormData();
+            formData.append('file', fileUpload.files[0]);
+            formData.append('source', 'upload');
+            await processImage(formData);
+        });
+
+        // Image processing function
+        async function processImage(formData) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const spinner = document.getElementById('loadingSpinner');
+            
+            resultsContainer.style.display = 'none';
+            resultsContainer.innerHTML = '';
+            spinner.style.display = 'block';
+            
+            try {
+                const response = await fetch('/ocr', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                spinner.style.display = 'none';
+                resultsContainer.style.display = 'block';
+                
+                if (data.status === 'fail') {
+                    resultsContainer.innerHTML = `
+                        <div class="error-message">
+                            ${data.error || 'Analysis failed. Please try again with a clearer image.'}
+                        </div>
+                    `;
+                    return;
+                }
+                
+                displayResults(data);
+                
+            } catch (error) {
+                spinner.style.display = 'none';
+                resultsContainer.style.display = 'block';
+                resultsContainer.innerHTML = `
+                    <div class="error-message">
+                        Network error: ${error.message}. Please check your connection and try again.
+                    </div>
+                `;
+            }
+        }
+
+        // Results display function
+        function displayResults(data) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            let html = '';
+            // OCR Results
+            if (data.full_text || (data.ocr && data.ocr.full_text)) {
+                const ocr = data.ocr || data;
+                html += `
+                    <div class="result-section">
+                        <div class="result-title">📝 Extracted Text</div>
+                        <div style="margin-bottom: 12px; color: #6b7280; font-size: 0.9rem;">
+                            Engine: ${ocr.engine_used || data.engine_used || 'Default'}
+                        </div>
+                        <div class="result-text">${ocr.full_text || ''}</div>
+                    </div>
+                `;
+            }
+            // Object Detection Results
+            const objects = data.object_detection || data.objects_detected || [];
+            if (objects.length > 0) {
+                html += `
+                    <div class="result-section">
+                        <div class="result-title">🎯 Detected Objects & Materials</div>
+                        <ul style="margin-bottom: 12px;">
+                            ${objects.map(obj => `<li><strong>${obj.class}</strong>: ${obj.material_guess || 'Unknown'} (${obj.material_confidence !== undefined ? (obj.material_confidence * 100).toFixed(0) + '%' : 'N/A'})</li>`).join('')}
+                        </ul>
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Object</th>
+                                    <th>Confidence</th>
+                                    <th>Material</th>
+                                    <th>Mat. Conf.</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                for (const obj of objects) {
+                    const confidence = (obj.confidence * 100).toFixed(1);
+                    const materialConf = obj.material_confidence !== undefined ? (obj.material_confidence * 100).toFixed(1) + '%' : 'N/A';
+                    let confidenceClass = 'confidence-high';
+                    if (obj.confidence < 0.5) confidenceClass = 'confidence-low';
+                    else if (obj.confidence < 0.8) confidenceClass = 'confidence-medium';
+                    const status = obj.low_confidence ? '<span class="confidence-low">⚠️ Low</span>' : '<span class="confidence-high">✅ Good</span>';
+                    html += `
+                        <tr>
+                            <td>${obj.class}</td>
+                            <td><span class="${confidenceClass}">${confidence}%</span></td>
+                            <td>${obj.material_guess || 'Unknown'}</td>
+                            <td>${materialConf}</td>
+                            <td>${status}</td>
+                        </tr>
+                    `;
+                }
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            // Warning message for low confidence detections
+            if (objects.some(obj => obj.low_confidence)) {
+                html += `
+                    <div class="warning-message">
+                        ⚠️ Some detections have low confidence. Results may be inaccurate. Consider retaking the image with better lighting or positioning.
+                    </div>
+                `;
+            }
+            resultsContainer.innerHTML = html;
+        }
+
+        // Metrics dashboard (admin only)
+        if (window.location.search.includes('admin=1')) {
+            document.getElementById('metricsContainer').style.display = 'block';
+            initializeMetricsDashboard();
+        }
+
+        function initializeMetricsDashboard() {
+            const canvas = document.getElementById('metricsChart');
+            const ctx = canvas.getContext('2d');
+            let metricsData = [];
+
+            function drawMetricsChart(data) {
+                if (!data.length) return;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Chart styling
+                const padding = 60;
+                const chartWidth = canvas.width - padding * 2;
+                const chartHeight = canvas.height - padding * 2;
+                
+                // Draw background
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw grid lines
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1;
+                
+                // Horizontal grid lines
+                for (let i = 0; i <= 5; i++) {
+                    const y = padding + (chartHeight / 5) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(padding, y);
+                    ctx.lineTo(canvas.width - padding, y);
+                    ctx.stroke();
+                }
+                
+                // Vertical grid lines
+                for (let i = 0; i <= 10; i++) {
+                    const x = padding + (chartWidth / 10) * i;
+                    ctx.beginPath();
+                    ctx.moveTo(x, padding);
+                    ctx.lineTo(x, canvas.height - padding);
+                    ctx.stroke();
+                }
+                
+                // Draw axes
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, canvas.height - padding);
+                ctx.lineTo(canvas.width - padding, canvas.height - padding);
+                ctx.stroke();
+                
+                // Draw data lines
+                if (data.length > 1) {
+                    const pointSpacing = chartWidth / (data.length - 1);
+                    
+                    // CPU usage line (green)
+                    drawDataLine(data, 'cpu', '#22c55e', pointSpacing, padding, chartHeight, 100);
+                    
+                    // Confidence line (blue)
+                    drawDataLine(data, 'confidence', '#3b82f6', pointSpacing, padding, chartHeight, 1);
+                    
+                    // Error rate line (red)
+                    drawDataLine(data, 'error', '#ef4444', pointSpacing, padding, chartHeight, 1);
+                }
+                
+                // Draw labels
+                ctx.fillStyle = '#475569';
+                ctx.font = '12px Inter, sans-serif';
+                ctx.textAlign = 'left';
+                
+                // Y-axis labels
+                ctx.fillText('100%', 10, padding + 5);
+                ctx.fillText('75%', 10, padding + chartHeight * 0.25 + 5);
+                ctx.fillText('50%', 10, padding + chartHeight * 0.5 + 5);
+                ctx.fillText('25%', 10, padding + chartHeight * 0.75 + 5);
+                ctx.fillText('0%', 10, canvas.height - padding + 5);
+                
+                // Legend
+                drawLegend(ctx, canvas.width - 150, padding + 10);
+            }
+            
+            function drawDataLine(data, property, color, pointSpacing, padding, chartHeight, maxValue) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                for (let i = 0; i < data.length; i++) {
+                    const x = padding + i * pointSpacing;
+                    const normalizedValue = (data[i][property] || 0) / maxValue;
+                    const y = padding + chartHeight - (normalizedValue * chartHeight);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                
+                ctx.stroke();
+                
+                // Draw data points
+                ctx.fillStyle = color;
+                for (let i = 0; i < data.length; i++) {
+                    const x = padding + i * pointSpacing;
+                    const normalizedValue = (data[i][property] || 0) / maxValue;
+                    const y = padding + chartHeight - (normalizedValue * chartHeight);
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            }
+            
+            function drawLegend(ctx, x, y) {
+                const items = [
+                    { color: '#22c55e', label: 'CPU Usage' },
+                    { color: '#3b82f6', label: 'Confidence' },
+                    { color: '#ef4444', label: 'Error Rate' }
+                ];
+                
+                ctx.font = '11px Inter, sans-serif';
+                
+                items.forEach((item, index) => {
+                    const itemY = y + index * 20;
+                    
+                    // Color box
+                    ctx.fillStyle = item.color;
+                    ctx.fillRect(x, itemY, 12, 12);
+                    
+                    // Label
+                    ctx.fillStyle = '#374151';
+                    ctx.fillText(item.label, x + 18, itemY + 9);
+                });
+            }
+            
+            async function fetchMetrics() {
+                try {
+                    const response = await fetch('/metrics');
+                    const metrics = await response.json();
+                    
+                    if (metrics && metrics.count > 0) {
+                        metricsData = Array.isArray(metrics.history) ? metrics.history : [];
+                        drawMetricsChart(metricsData);
+                        
+                        // Update summary
+                        const summary = document.getElementById('metricsSummary');
+                        summary.innerHTML = `
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                                <div>
+                                    <strong>Average CPU:</strong><br>
+                                    <span style="color: #22c55e; font-size: 1.2em;">${metrics.avg_cpu.toFixed(1)}%</span>
+                                </div>
+                                <div>
+                                    <strong>Average Confidence:</strong><br>
+                                    <span style="color: #3b82f6; font-size: 1.2em;">${(metrics.avg_confidence * 100).toFixed(1)}%</span>
+                                </div>
+                                <div>
+                                    <strong>Error Rate:</strong><br>
+                                    <span style="color: #ef4444; font-size: 1.2em;">${(metrics.error_rate * 100).toFixed(1)}%</span>
+                                </div>
+                                <div>
+                                    <strong>Images Processed:</strong><br>
+                                    <span style="color: #64748b; font-size: 1.2em;">${metrics.count}</span>
+                                </div>
+                                <div>
+                                    <strong>Avg Sharpness:</strong><br>
+                                    <span style="color: #7c3aed; font-size: 1.2em;">${metrics.avg_blur ? metrics.avg_blur.toFixed(1) : 'N/A'}</span>
+                                </div>
+                                <div>
+                                    <strong>Avg Brightness:</strong><br>
+                                    <span style="color: #db2777; font-size: 1.2em;">${metrics.avg_brightness ? metrics.avg_brightness.toFixed(1) : 'N/A'}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.warn('Failed to fetch metrics:', error);
+                }
+            }
+            
+            // Initial fetch and periodic updates
+            fetchMetrics();
+            setInterval(fetchMetrics, 5000);
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            stopCamera();
+        });
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add smooth scrolling for results
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            // Observe results container for smooth animations
+            const resultsContainer = document.getElementById('resultsContainer');
+            if (resultsContainer) {
+                observer.observe(resultsContainer);
+            }
+        });
+    </script>
+</body>
+</html>
