@@ -5,6 +5,34 @@ An end-to-end pipeline for product label analysis using OCR, object detection, a
 
 ---
 
+
+## What's New: Accuracy & Detection Stats
+
+### 📈 Improved Accuracy & Detection
+
+- **Enhanced Image Quality Handling:** The pipeline now computes blur, brightness, and contrast for every image, and attempts automatic enhancement for marginal images. This results in higher OCR and object detection accuracy, especially for images that are slightly blurry or dark.
+- **Parallel OCR & Object Detection:** OCR and object detection run in parallel, reducing processing time and improving throughput.
+- **Dynamic Error Feedback:** If the system cannot extract meaningful text or objects, it provides specific feedback based on image quality, helping users recapture better images.
+- **Rolling Metrics Dashboard:** The `/metrics` endpoint and frontend dashboard visualize rolling averages for blur, brightness, contrast, detection confidence, CPU usage, and error rate over the last 100 images. This allows you to monitor system health and model performance in real time.
+
+#### Example Metrics Dashboard (Live Visualization)
+
+```
+┌──────────────────────────────────────────────┐
+│ 📊 Green AI Metrics Dashboard                │
+├───────────────┬─────────────┬───────────────┤
+│ Avg Blur      │   92.3      │ (Sharp)       │
+│ Avg Brightness│   68.1      │ (Good)        │
+│ Avg Contrast  │   28.7      │ (High)        │
+│ Avg Confidence│   0.87      │ (YOLOv8)      │
+│ Error Rate    │   3%        │ (Last 100)    │
+│ Proc Time     │   0.82s     │ (Avg)         │
+└───────────────┴─────────────┴───────────────┘
+```
+
+*The dashboard updates live as new images are processed, helping you track improvements and spot issues instantly.*
+
+---
 ## Features
 
 - **Image Upload & Camera Support**: Upload product images or capture via camera (frontend ready, see `index.html`).

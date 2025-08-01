@@ -8,3 +8,4 @@ motor
 python-multipart
 loguru
 pytest
+ultralytics

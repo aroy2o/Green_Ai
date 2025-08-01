@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Install system dependencies for Tesseract and Pillow
 RUN apt-get update && \
-    apt-get install -y tesseract-ocr libtesseract-dev libleptonica-dev pkg-config poppler-utils && \
+    apt-get install -y tesseract-ocr libtesseract-dev libleptonica-dev pkg-config poppler-utils python3-opencv && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
