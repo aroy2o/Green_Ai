@@ -9,3 +9,9 @@ python-multipart
 loguru
 pytest
 ultralytics
+psutil
+opencv-python-headless
+numpy
+python-dotenv
+scikit-image
+pillow-heif

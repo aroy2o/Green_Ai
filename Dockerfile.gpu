@@ -1,0 +1,37 @@
+# Optional GPU-enabled image using official PyTorch runtime with CUDA
+FROM pytorch/pytorch:2.3.0-cuda12.1-cudnn8-runtime
+
+# Set work directory
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    OMP_NUM_THREADS=1 \
+    UVICORN_WORKERS=2
+
+# Install system dependencies for Tesseract and Pillow
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        tesseract-ocr \
+        libtesseract-dev \
+        libleptonica-dev \
+        pkg-config \
+        poppler-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies (torch with CUDA is preinstalled in base image)
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Create non-root user
+RUN useradd -m appuser && chown -R appuser /app
+USER appuser
+
+# Copy app code
+COPY --chown=appuser:appuser app ./app
+
+# Expose port
+EXPOSE 8000
+
+# Run with multiple workers; enable GPU with `--gpus all` when running the container
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${UVICORN_WORKERS:-2}"]

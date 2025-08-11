@@ -334,867 +334,440 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .result-section {
-            margin-bottom: 24px;
-        }
-
-        .result-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .result-title {
-            font-weight: 700;
-            color: #166534;
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-        }
-
-        .result-text {
-            background: white;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid #d1fae5;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            color: #374151;
-            white-space: pre-wrap;
-        }
-
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .results-table th {
-            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-            color: white;
-            padding: 16px 12px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .results-table td {
-            padding: 14px 12px;
-            border-bottom: 1px solid #f3f4f6;
-            color: #374151;
-            font-size: 0.9rem;
-        }
-
-        .results-table tr:hover {
-            background: #f9fafb;
-        }
-
-        .confidence-low {
-            color: #dc2626;
-            font-weight: 600;
-        }
-
-        .confidence-medium {
-            color: #d97706;
-            font-weight: 600;
-        }
-
-        .confidence-high {
-            color: #059669;
-            font-weight: 600;
-        }
-
-        .error-message {
-            color: #dc2626;
-            background: #fef2f2;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid #fecaca;
-            margin-top: 16px;
-            font-weight: 500;
-        }
-
-        .warning-message {
-            color: #d97706;
-            background: #fffbeb;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid #fed7aa;
-            margin-top: 16px;
-            font-weight: 500;
-        }
-
-        .metrics-dashboard {
-            margin-top: 48px;
+        .result-section.hidden {
             display: none;
-            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .result-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 16px;
             padding: 24px;
-            backdrop-filter: blur(10px);
+            margin-bottom: 24px;
+            animation: fadeIn 0.5s ease-out;
         }
 
-        .metrics-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #374151;
-            margin-bottom: 8px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .metrics-subtitle {
-            color: #6b7280;
-            margin-bottom: 20px;
+        .result-card h3 {
+            font-size: 1.25rem;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
         }
 
-        .metrics-chart {
-            width: 100%;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        .result-card h3 svg {
+            margin-right: 12px;
+            color: #4ade80;
         }
 
-        .metrics-summary {
-            margin-top: 16px;
-            color: #4b5563;
-            font-size: 0.95rem;
+        .result-card p, .result-card ul {
+            color: #475569;
             line-height: 1.6;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-                border-radius: 20px;
-            }
+        .result-card ul {
+            list-style-position: inside;
+            padding-left: 8px;
+        }
 
-            .header {
-                padding: 24px 20px;
-            }
+        .result-card li {
+            margin-bottom: 8px;
+        }
 
-            .header h1 {
-                font-size: 2rem;
-            }
+        .sustainability-section {
+            margin-top: 32px;
+        }
 
-            .content {
-                padding: 24px 20px;
-            }
+        .sustainability-section h2 {
+            font-size: 1.5rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
-            .camera-video {
-                max-width: 100%;
-                height: 240px;
-            }
+        .accordion-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
 
-            .camera-controls {
-                gap: 8px;
-            }
+        .accordion-item:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
 
-            .btn {
-                padding: 12px 20px;
-                font-size: 0.9rem;
-            }
+        .accordion-header {
+            padding: 16px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #334155;
+        }
 
-            .results-table {
-                font-size: 0.8rem;
-            }
+        .accordion-header:hover {
+            background: #f8fafc;
+        }
 
-            .results-table th,
-            .results-table td {
-                padding: 10px 8px;
-            }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            padding: 0 24px;
+        }
+
+        .accordion-content-inner {
+            padding-bottom: 24px;
+        }
+
+        .accordion-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .accordion-content li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .accordion-content li:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-content .source {
+            font-style: italic;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loader.active {
+            display: block;
+        }
+
+        .loader-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4ade80;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader p {
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .error-message {
+            display: none;
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 24px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .error-message.active {
+            display: block;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🌱 Green AI</h1>
-            <p>Smart Product Analysis & OCR</p>
+            <h1>Green AI</h1>
+            <p>Your Smart Product Sustainability Analyst</p>
         </div>
-
         <div class="content">
             <div class="tabs">
-                <button id="uploadTab" class="tab-btn active">📁 Upload Image</button>
-                <button id="captureTab" class="tab-btn">📸 Live Capture</button>
+                <button class="tab-btn active" data-tab="upload">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    Upload Image
+                </button>
+                <button class="tab-btn" data-tab="camera">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                    Use Camera
+                </button>
             </div>
 
-            <form id="uploadForm" class="upload-section">
+            <div class="upload-section">
                 <div class="file-input-wrapper">
-                    <div class="file-input" id="fileInput">
-                        <div class="file-input-text">📎 Drop your image here or click to browse</div>
-                        <div class="file-input-subtext">JPG, PNG • Max 5MB</div>
-                        <input type="file" id="fileUpload" accept="image/jpeg,image/png" required>
+                    <div class="file-input" id="file-drop-area">
+                        <span class="file-input-text">Drag & drop an image or click to select</span>
+                        <span class="file-input-subtext">Max file size: 5MB</span>
+                        <input type="file" id="file-input" accept="image/*">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">
-                    🔍 Analyze Image
-                </button>
-            </form>
-
-            <div id="cameraSection" class="camera-section">
-                <div class="camera-container">
-                    <video id="cameraVideo" class="camera-video" autoplay playsinline></video>
-                    <canvas id="captureCanvas" class="camera-canvas"></canvas>
-                    <div class="camera-overlay"></div>
-                    <div class="camera-guide">Position product in center of frame</div>
-                </div>
-                
-                <div class="camera-controls">
-                    <button id="captureBtn" type="button" class="btn btn-primary">
-                        📸 Capture
-                    </button>
-                    <button id="confirmBtn" type="button" class="btn btn-primary" style="display:none;">
-                        ✅ Analyze
-                    </button>
-                    <button id="retakeBtn" type="button" class="btn btn-secondary" style="display:none;">
-                        🔄 Retake
-                    </button>
-                </div>
-                
-                <div id="cameraError" class="error-message" style="display:none;"></div>
+                <button class="submit-btn" id="upload-btn">Analyze Product</button>
             </div>
 
-            <div class="spinner" id="loadingSpinner"></div>
-            
-            <div id="resultsContainer" class="result"></div>
+            <div class="camera-section">
+                <div class="camera-container">
+                    <video id="camera-feed" playsinline autoplay></video>
+                    <canvas id="camera-canvas" style="display:none;"></canvas>
+                    <div class="camera-overlay"></div>
+                </div>
+                <button class="submit-btn" id="capture-btn">Capture & Analyze</button>
+            </div>
 
-            <div id="metricsContainer" class="metrics-dashboard">
-                <h3 class="metrics-title">📊 Live System Metrics</h3>
-                <p class="metrics-subtitle">Rolling averages from last 100 processed images</p>
-                <canvas id="metricsChart" class="metrics-chart" width="520" height="220"></canvas>
-                <div id="metricsSummary" class="metrics-summary"></div>
+            <div class="loader" id="loader">
+                <div class="loader-spinner"></div>
+                <p id="loader-message">Analyzing image...</p>
+            </div>
+
+            <div class="error-message" id="error-message"></div>
+
+            <div class="result-section hidden" id="result-section">
+                <div class="result-card">
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        Image Analysis
+                    </h3>
+                    <p><strong>Extracted Text:</strong> <span id="ocr-text"></span></p>
+                    <p><strong>Detected Objects:</strong> <span id="detected-objects"></span></p>
+                </div>
+                <div class="sustainability-section">
+                    <h2>Sustainability Insights</h2>
+                    <div id="sustainability-results"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Tab management
-        const uploadTab = document.getElementById('uploadTab');
-        const captureTab = document.getElementById('captureTab');
-        const uploadForm = document.getElementById('uploadForm');
-        const cameraSection = document.getElementById('cameraSection');
-        let retakeCount = 0;
+        const fileInput = document.getElementById('file-input');
+        const fileDropArea = document.getElementById('file-drop-area');
+        const uploadBtn = document.getElementById('upload-btn');
+        const loader = document.getElementById('loader');
+        const loaderMessage = document.getElementById('loader-message');
+        const resultSection = document.getElementById('result-section');
+        const errorMessage = document.getElementById('error-message');
+        const ocrText = document.getElementById('ocr-text');
+        const detectedObjects = document.getElementById('detected-objects');
+        const sustainabilityResults = document.getElementById('sustainability-results');
 
-        function switchTab(tab) {
-            if (tab === 'upload') {
-                uploadForm.classList.remove('hidden');
-                cameraSection.classList.remove('active');
-                uploadTab.classList.add('active');
-                captureTab.classList.remove('active');
-                stopCamera();
-            } else {
-                uploadForm.classList.add('hidden');
-                cameraSection.classList.add('active');
-                uploadTab.classList.remove('active');
-                captureTab.classList.add('active');
-                startCamera();
-            }
-        }
+        // Tab switching
+        const tabs = document.querySelectorAll('.tab-btn');
+        const uploadSection = document.querySelector('.upload-section');
+        const cameraSection = document.querySelector('.camera-section');
 
-        uploadTab.addEventListener('click', () => switchTab('upload'));
-        captureTab.addEventListener('click', () => switchTab('capture'));
-
-        // File upload handling
-        const fileInput = document.getElementById('fileInput');
-        const fileUpload = document.getElementById('fileUpload');
-
-        fileInput.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            fileInput.classList.add('dragover');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                if (tab.dataset.tab === 'upload') {
+                    uploadSection.classList.remove('hidden');
+                    cameraSection.classList.remove('active');
+                } else {
+                    uploadSection.classList.add('hidden');
+                    cameraSection.classList.add('active');
+                    startCamera();
+                }
+            });
         });
 
-        fileInput.addEventListener('dragleave', () => {
-            fileInput.classList.remove('dragover');
-        });
-
-        fileInput.addEventListener('drop', (e) => {
+        // Drag and drop functionality
+        fileDropArea.addEventListener('dragover', (e) => {
             e.preventDefault();
-            fileInput.classList.remove('dragover');
+            fileDropArea.classList.add('dragover');
+        });
+        fileDropArea.addEventListener('dragleave', () => {
+            fileDropArea.classList.remove('dragover');
+        });
+        fileDropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileDropArea.classList.remove('dragover');
             const files = e.dataTransfer.files;
-            if (files.length) {
-                fileUpload.files = files;
-                updateFileInputText(files[0].name);
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateFileName(files[0].name);
+            }
+        });
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                updateFileName(fileInput.files[0].name);
             }
         });
 
-        fileUpload.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                updateFileInputText(e.target.files[0].name);
+        function updateFileName(name) {
+            fileDropArea.querySelector('.file-input-text').textContent = name;
+        }
+
+        uploadBtn.addEventListener('click', () => {
+            if (fileInput.files.length === 0) {
+                showError('Please select an image file first.');
+                return;
             }
+            const file = fileInput.files[0];
+            analyzeImage(file);
         });
 
-        function updateFileInputText(filename) {
-            const textEl = fileInput.querySelector('.file-input-text');
-            textEl.textContent = `📎 ${filename}`;
-        }
-
-        // --- Real-time blur/brightness check for uploads ---
-        let uploadImageQuality = null;
-        let uploadOverrideAllowed = false;
-        const uploadErrorDiv = document.createElement('div');
-        uploadErrorDiv.className = 'error-message';
-        uploadErrorDiv.style.display = 'none';
-        fileInput.parentNode.appendChild(uploadErrorDiv);
-
-        fileUpload.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                updateFileInputText(e.target.files[0].name);
-                checkUploadImageQuality(e.target.files[0]);
-            }
-        });
-
-        function checkUploadImageQuality(file) {
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                const img = new window.Image();
-                img.onload = function() {
-                    const canvasTmp = document.createElement('canvas');
-                    canvasTmp.width = img.width;
-                    canvasTmp.height = img.height;
-                    const ctx = canvasTmp.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    const quality = assessImageQuality(ctx, img.width, img.height);
-                    uploadImageQuality = quality;
-                    // Thresholds (same as camera)
-                    const minSharpness = 100;
-                    const minBrightness = 40;
-                    const minContrast = 20;
-                    let issues = [];
-                    if (quality.sharpness < minSharpness) issues.push('Image appears blurry');
-                    if (quality.brightness < minBrightness) issues.push('Image is too dark');
-                    if (quality.contrast < minContrast) issues.push('Image has low contrast');
-                    if (issues.length > 0) {
-                        uploadErrorDiv.textContent = issues.join('. ') + '. Please adjust lighting and hold camera steady.';
-                        uploadErrorDiv.style.display = 'block';
-                        uploadOverrideAllowed = true;
-                        // Add override checkbox
-                        if (!document.getElementById('overrideUpload')) {
-                            const override = document.createElement('label');
-                            override.style.display = 'block';
-                            override.style.marginTop = '10px';
-                            override.innerHTML = '<input type="checkbox" id="overrideUpload"> Send anyway (may fail)';
-                            uploadErrorDiv.appendChild(override);
-                            document.getElementById('overrideUpload').addEventListener('change', function() {
-                                uploadOverrideAllowed = this.checked;
-                            });
-                        }
-                    } else {
-                        uploadErrorDiv.style.display = 'none';
-                        uploadOverrideAllowed = false;
-                        if (document.getElementById('overrideUpload')) {
-                            document.getElementById('overrideUpload').parentNode.remove();
-                        }
-                    }
-                };
-                img.src = ev.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Camera functionality
-        const video = document.getElementById('cameraVideo');
-        const canvas = document.getElementById('captureCanvas');
-        const captureBtn = document.getElementById('captureBtn');
-        const confirmBtn = document.getElementById('confirmBtn');
-        const retakeBtn = document.getElementById('retakeBtn');
-        const cameraError = document.getElementById('cameraError');
-        let stream = null;
-        let capturedBlob = null;
-
-        async function startCamera() {
-            cameraError.style.display = 'none';
-            try {
-                stopCamera();
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' }, 
-                    audio: false 
-                });
-                video.srcObject = stream;
-                resetCameraControls();
-            } catch (err) {
-                showError('Camera unavailable or permission denied. Please use Upload Image instead.');
-            }
-        }
-
-        function stopCamera() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
-        }
-
-        function resetCameraControls() {
-            canvas.style.display = 'none';
-            video.style.display = 'block';
-            captureBtn.style.display = '';
-            confirmBtn.style.display = 'none';
-            retakeBtn.style.display = 'none';
-            capturedBlob = null;
-        }
-
-        function showError(message) {
-            cameraError.textContent = message;
-            cameraError.style.display = 'block';
-        }
-
-        // Image quality assessment
-        function assessImageQuality(ctx, width, height) {
-            const imageData = ctx.getImageData(0, 0, width, height);
-            const data = imageData.data;
-            
-            // Convert to grayscale and calculate metrics
-            const grayscale = [];
-            let totalBrightness = 0;
-            
-            for (let i = 0; i < data.length; i += 4) {
-                const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-                grayscale.push(gray);
-                totalBrightness += gray;
-            }
-            
-            const brightness = totalBrightness / grayscale.length;
-            
-            // Simple blur detection using Laplacian variance
-            const laplacianVariance = calculateLaplacianVariance(grayscale, width, height);
-            
-            // Calculate contrast (standard deviation)
-            const mean = brightness;
-            let variance = 0;
-            for (const gray of grayscale) {
-                variance += (gray - mean) ** 2;
-            }
-            const contrast = Math.sqrt(variance / grayscale.length);
-            
-            return { brightness, contrast, sharpness: laplacianVariance };
-        }
-
-        function calculateLaplacianVariance(grayscale, width, height) {
-            const laplacian = [];
-            const kernel = [0, 1, 0, 1, -4, 1, 0, 1, 0];
-            
-            for (let y = 1; y < height - 1; y++) {
-                for (let x = 1; x < width - 1; x++) {
-                    let sum = 0;
-                    for (let ky = -1; ky <= 1; ky++) {
-                        for (let kx = -1; kx <= 1; kx++) {
-                            const idx = (y + ky) * width + (x + kx);
-                            const kernelIdx = (ky + 1) * 3 + (kx + 1);
-                            sum += grayscale[idx] * kernel[kernelIdx];
-                        }
-                    }
-                    laplacian.push(sum);
-                }
-            }
-            
-            const mean = laplacian.reduce((a, b) => a + b, 0) / laplacian.length;
-            const variance = laplacian.reduce((acc, val) => acc + (val - mean) ** 2, 0) / laplacian.length;
-            
-            return variance;
-        }
-
-        // Camera event handlers
-        captureBtn.addEventListener('click', () => {
-            if (!stream) return;
-            
-            const ctx = canvas.getContext('2d');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0);
-            
-            // Assess image quality
-            const quality = assessImageQuality(ctx, canvas.width, canvas.height);
-            
-            // Quality thresholds
-            const minSharpness = 100;
-            const minBrightness = 40;
-            const minContrast = 20;
-            
-            let qualityIssues = [];
-            if (quality.sharpness < minSharpness) qualityIssues.push('Image appears blurry');
-            if (quality.brightness < minBrightness) qualityIssues.push('Image is too dark');
-            if (quality.contrast < minContrast) qualityIssues.push('Image has low contrast');
-            
-            if (qualityIssues.length > 0) {
-                showError(qualityIssues.join('. ') + '. Please adjust lighting and hold camera steady.');
-                retakeBtn.style.display = '';
-                confirmBtn.style.display = 'none';
-                captureBtn.style.display = 'none';
-            } else {
-                cameraError.style.display = 'none';
-                canvas.style.display = 'block';
-                video.style.display = 'none';
-                captureBtn.style.display = 'none';
-                confirmBtn.style.display = '';
-                retakeBtn.style.display = '';
-                
-                canvas.toBlob(blob => {
-                    capturedBlob = blob;
-                }, 'image/jpeg', 0.9);
-            }
-        });
-
-        retakeBtn.addEventListener('click', () => {
-            retakeCount++;
-            resetCameraControls();
-        });
-
-        confirmBtn.addEventListener('click', async () => {
-            if (!capturedBlob) return;
-            stopCamera();
-            
+        async function analyzeImage(file) {
             const formData = new FormData();
-            formData.append('file', capturedBlob, 'live_capture.jpg');
-            formData.append('source', 'live_capture');
-            formData.append('retake_count', retakeCount);
-            
-            await processImage(formData);
-            retakeCount = 0;
-        });
+            formData.append('file', file);
 
-        // Form submission
-        uploadForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!fileUpload.files.length) return;
-            // Block submission if blurry/dark and not overridden
-            if (uploadImageQuality) {
-                const minSharpness = 100, minBrightness = 40, minContrast = 20;
-                if ((uploadImageQuality.sharpness < minSharpness || uploadImageQuality.brightness < minBrightness || uploadImageQuality.contrast < minContrast) && !uploadOverrideAllowed) {
-                    uploadErrorDiv.textContent = 'Image appears blurry or poorly lit. Please adjust lighting and hold camera steady.';
-                    uploadErrorDiv.style.display = 'block';
-                    return;
-                }
-            }
-            const formData = new FormData();
-            formData.append('file', fileUpload.files[0]);
-            formData.append('source', 'upload');
-            await processImage(formData);
-        });
+            showLoader('Uploading and processing...');
+            hideError();
+            resultSection.classList.add('hidden');
 
-        // Image processing function
-        async function processImage(formData) {
-            const resultsContainer = document.getElementById('resultsContainer');
-            const spinner = document.getElementById('loadingSpinner');
-            
-            resultsContainer.style.display = 'none';
-            resultsContainer.innerHTML = '';
-            spinner.style.display = 'block';
-            
             try {
                 const response = await fetch('/ocr', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
                 });
-                
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Analysis failed.');
+                }
+
                 const data = await response.json();
-                
-                spinner.style.display = 'none';
-                resultsContainer.style.display = 'block';
-                
-                if (data.status === 'fail') {
-                    resultsContainer.innerHTML = `
-                        <div class="error-message">
-                            ${data.error || 'Analysis failed. Please try again with a clearer image.'}
-                        </div>
-                    `;
-                    return;
-                }
-                
                 displayResults(data);
-                
+
             } catch (error) {
-                spinner.style.display = 'none';
-                resultsContainer.style.display = 'block';
-                resultsContainer.innerHTML = `
-                    <div class="error-message">
-                        Network error: ${error.message}. Please check your connection and try again.
-                    </div>
-                `;
+                showError(error.message);
+            } finally {
+                hideLoader();
             }
         }
 
-        // Results display function
+        function showLoader(message) {
+            loaderMessage.textContent = message;
+            loader.classList.add('active');
+        }
+
+        function hideLoader() {
+            loader.classList.remove('active');
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('active');
+        }
+
+        function hideError() {
+            errorMessage.classList.remove('active');
+        }
+
         function displayResults(data) {
-            const resultsContainer = document.getElementById('resultsContainer');
-            let html = '';
-            // OCR Results
-            if (data.full_text || (data.ocr && data.ocr.full_text)) {
-                const ocr = data.ocr || data;
-                html += `
-                    <div class="result-section">
-                        <div class="result-title">📝 Extracted Text</div>
-                        <div style="margin-bottom: 12px; color: #6b7280; font-size: 0.9rem;">
-                            Engine: ${ocr.engine_used || data.engine_used || 'Default'}
-                        </div>
-                        <div class="result-text">${ocr.full_text || ''}</div>
-                    </div>
-                `;
-            }
-            // Object Detection Results
-            const objects = data.object_detection || data.objects_detected || [];
-            if (objects.length > 0) {
-                html += `
-                    <div class="result-section">
-                        <div class="result-title">🎯 Detected Objects & Materials</div>
-                        <ul style="margin-bottom: 12px;">
-                            ${objects.map(obj => `<li><strong>${obj.class}</strong>: ${obj.material_guess || 'Unknown'} (${obj.material_confidence !== undefined ? (obj.material_confidence * 100).toFixed(0) + '%' : 'N/A'})</li>`).join('')}
-                        </ul>
-                        <table class="results-table">
-                            <thead>
-                                <tr>
-                                    <th>Object</th>
-                                    <th>Confidence</th>
-                                    <th>Material</th>
-                                    <th>Mat. Conf.</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-                for (const obj of objects) {
-                    const confidence = (obj.confidence * 100).toFixed(1);
-                    const materialConf = obj.material_confidence !== undefined ? (obj.material_confidence * 100).toFixed(1) + '%' : 'N/A';
-                    let confidenceClass = 'confidence-high';
-                    if (obj.confidence < 0.5) confidenceClass = 'confidence-low';
-                    else if (obj.confidence < 0.8) confidenceClass = 'confidence-medium';
-                    const status = obj.low_confidence ? '<span class="confidence-low">⚠️ Low</span>' : '<span class="confidence-high">✅ Good</span>';
-                    html += `
-                        <tr>
-                            <td>${obj.class}</td>
-                            <td><span class="${confidenceClass}">${confidence}%</span></td>
-                            <td>${obj.material_guess || 'Unknown'}</td>
-                            <td>${materialConf}</td>
-                            <td>${status}</td>
-                        </tr>
-                    `;
+            resultSection.classList.remove('hidden');
+            ocrText.textContent = data.ocr.full_text || 'No text found.';
+            const objects = data.object_detection && data.object_detection.length > 0
+                ? data.object_detection.map(obj => `${obj.class || obj.name} (${(obj.confidence * 100).toFixed(1)}%)`).join(', ')
+                : 'No objects detected.';
+            detectedObjects.textContent = objects;
+
+            sustainabilityResults.innerHTML = '';
+            const analysis = data.sustainability_analysis;
+            if (analysis && !analysis.error) {
+                if (analysis.product_name) {
+                    const productNameEl = document.createElement('h4');
+                    productNameEl.innerHTML = `<strong>Product:</strong> ${analysis.product_name}`;
+                    sustainabilityResults.appendChild(productNameEl);
                 }
-                html += `
-                            </tbody>
-                        </table>
-                    </div>
-                `;
+                if (analysis.positive_insights && analysis.positive_insights.length > 0)
+                    sustainabilityResults.appendChild(createAccordion('Positive Insights', analysis.positive_insights));
+                if (analysis.negative_insights && analysis.negative_insights.length > 0)
+                    sustainabilityResults.appendChild(createAccordion('Negative Insights', analysis.negative_insights));
+                if (analysis.recommended_products && analysis.recommended_products.length > 0)
+                    sustainabilityResults.appendChild(createAccordion('Recommended Products', analysis.recommended_products));
+                if (analysis.explanations && analysis.explanations.length > 0)
+                    sustainabilityResults.appendChild(createAccordion('Explanations & Sources', analysis.explanations));
+            } else if (analysis && analysis.error) {
+                const errorEl = document.createElement('p');
+                errorEl.textContent = analysis.error;
+                sustainabilityResults.appendChild(errorEl);
+            } else {
+                const noInfoEl = document.createElement('p');
+                noInfoEl.textContent = 'No sustainability analysis available.';
+                sustainabilityResults.appendChild(noInfoEl);
             }
-            // Warning message for low confidence detections
-            if (objects.some(obj => obj.low_confidence)) {
-                html += `
-                    <div class="warning-message">
-                        ⚠️ Some detections have low confidence. Results may be inaccurate. Consider retaking the image with better lighting or positioning.
-                    </div>
-                `;
-            }
-            resultsContainer.innerHTML = html;
         }
 
-        // Metrics dashboard (admin only)
-        if (window.location.search.includes('admin=1')) {
-            document.getElementById('metricsContainer').style.display = 'block';
-            initializeMetricsDashboard();
-        }
+        function createAccordion(title, items) {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'accordion-item';
 
-        function initializeMetricsDashboard() {
-            const canvas = document.getElementById('metricsChart');
-            const ctx = canvas.getContext('2d');
-            let metricsData = [];
-
-            function drawMetricsChart(data) {
-                if (!data.length) return;
-
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Chart styling
-                const padding = 60;
-                const chartWidth = canvas.width - padding * 2;
-                const chartHeight = canvas.height - padding * 2;
-                
-                // Draw background
-                ctx.fillStyle = '#f8fafc';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Draw grid lines
-                ctx.strokeStyle = '#e2e8f0';
-                ctx.lineWidth = 1;
-                
-                // Horizontal grid lines
-                for (let i = 0; i <= 5; i++) {
-                    const y = padding + (chartHeight / 5) * i;
-                    ctx.beginPath();
-                    ctx.moveTo(padding, y);
-                    ctx.lineTo(canvas.width - padding, y);
-                    ctx.stroke();
-                }
-                
-                // Vertical grid lines
-                for (let i = 0; i <= 10; i++) {
-                    const x = padding + (chartWidth / 10) * i;
-                    ctx.beginPath();
-                    ctx.moveTo(x, padding);
-                    ctx.lineTo(x, canvas.height - padding);
-                    ctx.stroke();
-                }
-                
-                // Draw axes
-                ctx.strokeStyle = '#64748b';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(padding, padding);
-                ctx.lineTo(padding, canvas.height - padding);
-                ctx.lineTo(canvas.width - padding, canvas.height - padding);
-                ctx.stroke();
-                
-                // Draw data lines
-                if (data.length > 1) {
-                    const pointSpacing = chartWidth / (data.length - 1);
-                    
-                    // CPU usage line (green)
-                    drawDataLine(data, 'cpu', '#22c55e', pointSpacing, padding, chartHeight, 100);
-                    
-                    // Confidence line (blue)
-                    drawDataLine(data, 'confidence', '#3b82f6', pointSpacing, padding, chartHeight, 1);
-                    
-                    // Error rate line (red)
-                    drawDataLine(data, 'error', '#ef4444', pointSpacing, padding, chartHeight, 1);
-                }
-                
-                // Draw labels
-                ctx.fillStyle = '#475569';
-                ctx.font = '12px Inter, sans-serif';
-                ctx.textAlign = 'left';
-                
-                // Y-axis labels
-                ctx.fillText('100%', 10, padding + 5);
-                ctx.fillText('75%', 10, padding + chartHeight * 0.25 + 5);
-                ctx.fillText('50%', 10, padding + chartHeight * 0.5 + 5);
-                ctx.fillText('25%', 10, padding + chartHeight * 0.75 + 5);
-                ctx.fillText('0%', 10, canvas.height - padding + 5);
-                
-                // Legend
-                drawLegend(ctx, canvas.width - 150, padding + 10);
-            }
+            const header = document.createElement('div');
+            header.className = 'accordion-header';
+            header.textContent = title;
             
-            function drawDataLine(data, property, color, pointSpacing, padding, chartHeight, maxValue) {
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                
-                for (let i = 0; i < data.length; i++) {
-                    const x = padding + i * pointSpacing;
-                    const normalizedValue = (data[i][property] || 0) / maxValue;
-                    const y = padding + chartHeight - (normalizedValue * chartHeight);
-                    
-                    if (i === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                }
-                
-                ctx.stroke();
-                
-                // Draw data points
-                ctx.fillStyle = color;
-                for (let i = 0; i < data.length; i++) {
-                    const x = padding + i * pointSpacing;
-                    const normalizedValue = (data[i][property] || 0) / maxValue;
-                    const y = padding + chartHeight - (normalizedValue * chartHeight);
-                    
-                    ctx.beginPath();
-                    ctx.arc(x, y, 4, 0, 2 * Math.PI);
-                    ctx.fill();
-                }
-            }
+            const content = document.createElement('div');
+            content.className = 'accordion-content';
             
-            function drawLegend(ctx, x, y) {
-                const items = [
-                    { color: '#22c55e', label: 'CPU Usage' },
-                    { color: '#3b82f6', label: 'Confidence' },
-                    { color: '#ef4444', label: 'Error Rate' }
-                ];
-                
-                ctx.font = '11px Inter, sans-serif';
-                
-                items.forEach((item, index) => {
-                    const itemY = y + index * 20;
-                    
-                    // Color box
-                    ctx.fillStyle = item.color;
-                    ctx.fillRect(x, itemY, 12, 12);
-                    
-                    // Label
-                    ctx.fillStyle = '#374151';
-                    ctx.fillText(item.label, x + 18, itemY + 9);
-                });
-            }
-            
-            async function fetchMetrics() {
-                try {
-                    const response = await fetch('/metrics');
-                    const metrics = await response.json();
-                    
-                    if (metrics && metrics.count > 0) {
-                        metricsData = Array.isArray(metrics.history) ? metrics.history : [];
-                        drawMetricsChart(metricsData);
-                        
-                        // Update summary
-                        const summary = document.getElementById('metricsSummary');
-                        summary.innerHTML = `
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
-                                <div>
-                                    <strong>Average CPU:</strong><br>
-                                    <span style="color: #22c55e; font-size: 1.2em;">${metrics.avg_cpu.toFixed(1)}%</span>
-                                </div>
-                                <div>
-                                    <strong>Average Confidence:</strong><br>
-                                    <span style="color: #3b82f6; font-size: 1.2em;">${(metrics.avg_confidence * 100).toFixed(1)}%</span>
-                                </div>
-                                <div>
-                                    <strong>Error Rate:</strong><br>
-                                    <span style="color: #ef4444; font-size: 1.2em;">${(metrics.error_rate * 100).toFixed(1)}%</span>
-                                </div>
-                                <div>
-                                    <strong>Images Processed:</strong><br>
-                                    <span style="color: #64748b; font-size: 1.2em;">${metrics.count}</span>
-                                </div>
-                                <div>
-                                    <strong>Avg Sharpness:</strong><br>
-                                    <span style="color: #7c3aed; font-size: 1.2em;">${metrics.avg_blur ? metrics.avg_blur.toFixed(1) : 'N/A'}</span>
-                                </div>
-                                <div>
-                                    <strong>Avg Brightness:</strong><br>
-                                    <span style="color: #db2777; font-size: 1.2em;">${metrics.avg_brightness ? metrics.avg_brightness.toFixed(1) : 'N/A'}</span>
-                                </div>
-                            </div>
-                        `;
-                    }
-                } catch (error) {
-                    console.warn('Failed to fetch metrics:', error);
-                }
-            }
-            
-            // Initial fetch and periodic updates
-            fetchMetrics();
-            setInterval(fetchMetrics, 5000);
-        }
+            const contentInner = document.createElement('div');
+            contentInner.className = 'accordion-content-inner';
 
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', () => {
-            stopCamera();
-        });
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', () => {
-            // Add smooth scrolling for results
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
+            const list = document.createElement('ul');
+            items.forEach(text => {
+                const listItem = document.createElement('li');
+                listItem.textContent = text;
+                list.appendChild(listItem);
             });
 
-            // Observe results container for smooth animations
-            const resultsContainer = document.getElementById('resultsContainer');
-            if (resultsContainer) {
-                observer.observe(resultsContainer);
+            contentInner.appendChild(list);
+            content.appendChild(contentInner);
+            itemDiv.appendChild(header);
+            itemDiv.appendChild(content);
+
+            header.addEventListener('click', () => {
+                const isActive = itemDiv.classList.toggle('active');
+                content.style.maxHeight = isActive ? content.scrollHeight + 'px' : '0';
+            });
+
+            return itemDiv;
+        }
+
+        // Camera functionality
+        const video = document.getElementById('camera-feed');
+        const canvas = document.getElementById('camera-canvas');
+        const captureBtn = document.getElementById('capture-btn');
+
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
+            } catch (err) {
+                showError('Could not access the camera. Please grant permission.');
+                console.error("Camera error:", err);
             }
+        }
+
+        captureBtn.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            canvas.toBlob(blob => {
+                const file = new File([blob], "capture.jpg", { type: "image/jpeg" });
+                analyzeImage(file);
+            }, 'image/jpeg');
         });
+
     </script>
 </body>
 </html>

@@ -1,4 +1,3 @@
-
 # Green AI - Smart Product Analysis Pipeline
 
 An end-to-end pipeline for product label analysis using OCR, object detection, and MongoDB storage. Built with FastAPI, supports Tesseract and EasyOCR, YOLOv8 object detection, image quality enhancement, and a modern frontend.
@@ -6,42 +5,25 @@ An end-to-end pipeline for product label analysis using OCR, object detection, a
 ---
 
 
-## What's New: Accuracy & Detection Stats
+## What's New: Accuracy, Robustness & Ops
 
-### 📈 Improved Accuracy & Detection
-
-- **Enhanced Image Quality Handling:** The pipeline now computes blur, brightness, and contrast for every image, and attempts automatic enhancement for marginal images. This results in higher OCR and object detection accuracy, especially for images that are slightly blurry or dark.
-- **Parallel OCR & Object Detection:** OCR and object detection run in parallel, reducing processing time and improving throughput.
-- **Dynamic Error Feedback:** If the system cannot extract meaningful text or objects, it provides specific feedback based on image quality, helping users recapture better images.
-- **Rolling Metrics Dashboard:** The `/metrics` endpoint and frontend dashboard visualize rolling averages for blur, brightness, contrast, detection confidence, CPU usage, and error rate over the last 100 images. This allows you to monitor system health and model performance in real time.
-
-#### Example Metrics Dashboard (Live Visualization)
-
-```
-┌──────────────────────────────────────────────┐
-│ 📊 Green AI Metrics Dashboard                │
-├───────────────┬─────────────┬───────────────┤
-│ Avg Blur      │   92.3      │ (Sharp)       │
-│ Avg Brightness│   68.1      │ (Good)        │
-│ Avg Contrast  │   28.7      │ (High)        │
-│ Avg Confidence│   0.87      │ (YOLOv8)      │
-│ Error Rate    │   3%        │ (Last 100)    │
-│ Proc Time     │   0.82s     │ (Avg)         │
-└───────────────┴─────────────┴───────────────┘
-```
-
-*The dashboard updates live as new images are processed, helping you track improvements and spot issues instantly.*
+- Pydantic response models added (strict schemas) for /ocr, /metrics, /health.
+- Faster, more robust image validation: supports JPEG/PNG/WebP/GIF/TIFF/HEIC, OpenCV and ImageIO fallbacks; fewer false "corrupted image" errors.
+- Speedups and stability for YOLO: thread-safe lazy loader, half-precision on CUDA, fused layers, vectorized box extraction, and adaptive input size.
+- Slimmer, more secure Docker images: headless OpenCV via pip, non-root user, optional GPU profile, healthcheck.
+- Production guidance: use multiple Uvicorn workers (2–4) for CPU-bound parallelism; concurrency guard for in-process tasks.
 
 ---
+
 ## Features
 
 - **Image Upload & Camera Support**: Upload product images or capture via camera (frontend ready, see `index.html`).
 - **OCR**: Extracts text using Tesseract and EasyOCR (auto-selects best result).
-- **Object Detection**: YOLOv8-based detection of packaging types (bottle, can, box, etc.) and material guessing.
-- **Image Quality Metrics**: Computes blur, brightness, and contrast; attempts enhancement for marginal images.
+- **Object Detection**: YOLOv8-based detection of packaging types and material guessing.
+- **Image Quality Metrics**: Computes blur, brightness, and contrast; enhances marginal images.
 - **MongoDB Storage**: Stores OCR results, image info, and analytics in MongoDB (with GridFS support).
 - **Metrics Dashboard**: Minimal in-memory metrics endpoint for monitoring.
-- **Docker Support**: Ready-to-deploy Dockerfile for easy containerization.
+- **Docker Support**: CPU and GPU Dockerfiles, healthcheck, non-root user.
 - **Testing**: Pytest-based API tests for upload, validation, and error handling.
 
 ---
@@ -50,7 +32,8 @@ An end-to-end pipeline for product label analysis using OCR, object detection, a
 
 ```
 .
-├── Dockerfile
+├── Dockerfile                 # Slim, non-root, headless OpenCV, healthcheck
+├── Dockerfile.gpu             # CUDA profile (use --gpus all)
 ├── index.html
 ├── README.md
 ├── requirements.txt
@@ -58,11 +41,12 @@ An end-to-end pipeline for product label analysis using OCR, object detection, a
 ├── app/
 │   ├── db.py                # MongoDB/AsyncIOMotor integration
 │   ├── logger.py            # Loguru logger config
-│   ├── main.py              # FastAPI app, endpoints, metrics
-│   ├── object_detection.py  # YOLOv8 object detection & material guessing
+│   ├── main.py              # FastAPI app, endpoints, metrics (typed responses)
+│   ├── object_detection.py  # YOLOv8 detection & material guessing (optimized)
 │   ├── ocr.py               # OCR logic (Tesseract, EasyOCR)
+│   ├── schemas.py           # Pydantic response models
 │   ├── text_processing.py   # Text cleaning and structuring
-│   ├── utils.py             # Image validation, enhancement, metrics
+│   ├── utils.py             # Image validation, enhancement, metrics (robust)
 │   └── __pycache__/         # Python bytecode cache
 ├── tests/
 │   ├── sample.txt           # Invalid file for negative test
@@ -74,24 +58,12 @@ An end-to-end pipeline for product label analysis using OCR, object detection, a
 
 ## Requirements
 
-- Python 3.8+
-- FastAPI
-- Uvicorn
-- Pillow
-- pytesseract
-- easyocr
-- pymongo
-- motor
-- python-multipart
-- loguru
-- pytest
-- ultralytics (for YOLOv8)
-
-See `requirements.txt` for details. You may need to install system dependencies for Tesseract and OpenCV (see Dockerfile for reference).
+- Python 3.10+
+- See `requirements.txt` for package list. System deps: Tesseract (libs are installed in Dockerfiles).
 
 ---
 
-## Installation
+## Installation (local)
 
 ```bash
 pip install -r requirements.txt
@@ -102,8 +74,7 @@ pip install -r requirements.txt
 ## MongoDB Setup
 
 - Ensure MongoDB is running and accessible (default: `mongodb://localhost:27017`).
-- For image storage, GridFS is used (handled by pymongo/motor).
-- You can override DB connection via `MONGO_URI` and `MONGO_DB` environment variables.
+- Override via `MONGO_URI` and `MONGO_DB` environment variables.
 
 ---
 
@@ -115,106 +86,82 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-### With Docker
+### With Docker (CPU)
 
-Build the image:
+The image installs `opencv-python-headless` from pip (no system OpenCV). Base image is slim and runs as non-root.
+
+Build:
 
 ```bash
 docker build -t ocr-pipeline .
 ```
 
-Run the container:
+Run (2–4 workers recommended on CPU):
 
 ```bash
 docker run -p 8000:8000 \
+  -e UVICORN_WORKERS=4 \
   -e MONGO_URI="mongodb://host.docker.internal:27017" \
   -e MONGO_DB=ocr_pipeline \
   -v $(pwd)/yolov8n.pt:/app/yolov8n.pt \
   ocr-pipeline
 ```
 
-*Note: Adjust `MONGO_URI` as needed for your environment. The YOLOv8 weights file (`yolov8n.pt`) must be present in the project root and mounted into the container.*
+### With Docker (GPU)
+
+Use `Dockerfile.gpu` with the official PyTorch CUDA runtime and run with `--gpus all`:
+
+```bash
+docker build -f Dockerfile.gpu -t ocr-pipeline-gpu .
+# Docker 19.03+
+docker run --gpus all -p 8000:8000 \
+  -e UVICORN_WORKERS=2 \
+  -v $(pwd)/yolov8n.pt:/app/yolov8n.pt \
+  ocr-pipeline-gpu
+```
+
+YOLO/EasyOCR will use CUDA automatically when available.
 
 ---
-
 ## API Endpoints
 
-### `POST /ocr`
+- `POST /ocr` – Typed response: OCR text, detection list, quality metrics, latency.
+- `GET /metrics` – Rolling averages for dashboard.
+- `GET /health` – Lightweight health info.
 
-**Description:**
-Analyze a product image for text and packaging type.
-
-**Request:**
-- `file`: image (JPEG/PNG, ≤5MB, multipart form-data)
-- `source`: (optional) string, e.g. 'upload' or 'camera'
-- `retake_count`: (optional) int, number of retakes
-
-**Response:**
-- On success:
-  - `status`: "success"
-  - `engine_used`: "Tesseract" or "Easyocr"
-  - `full_text`: cleaned OCR text
-  - `structured_text`: dict with product_name, ingredients, features, other_info
-  - `object_detection`: list of detected objects with class, bounding box, confidence, material guess
-  - `quality`: blur, brightness, contrast
-- On failure:
-  - `status`: "fail"
-  - `error`: error message
-  - `object_detection`: always present (may be empty)
-
-### `GET /metrics`
-
-Returns recent API usage and performance metrics (in-memory, for dashboard).
+See `/docs` for OpenAPI.
 
 ---
-
 ## Testing
-
-Run all tests with:
 
 ```bash
 pytest
 ```
 
-Test coverage includes:
-- Valid image upload and OCR
-- Invalid file type handling
-- Large file rejection
+---
+## Production Notes
 
-See `tests/test_api.py` for details.
+- **Workers**: set `UVICORN_WORKERS=2..4` depending on CPU cores and memory.
+- **Concurrency**: set `MAX_INFER_CONCURRENCY` to limit in-process tasks.
+- **Timeouts**: tweak `DETECTION_TIMEOUT_SEC`, `OCR_TIMEOUT_SEC`, `ROI_OCR_TIMEOUT_SEC`.
+- **Image limits**: `MAX_IMAGE_SIDE` for downscaling oversized uploads; `ALLOWED_IMAGE_FORMATS` to restrict formats (e.g., `jpeg,png,webp`).
 
 ---
+## Troubleshooting
 
-## Example Usage
+- Getting "Corrupted image file" for a valid image?
+  - Ensure the client sends multipart/form-data with correct `Content-Type` and actual file bytes.
+  - We now support JPEG, PNG, WebP, GIF (first frame), TIFF, HEIC/HEIF. HEIC needs `pillow-heif` (already in requirements).
+  - Some camera apps embed unusual metadata; try re-saving the image or removing EXIF, or test with another image to isolate the issue.
+  - Check logs for detailed parser/OpenCV/ImageIO fallback errors (debug level).
 
-```bash
-curl -F "file=@tests/sample1.jpg" http://localhost:8000/ocr
-```
-
----
-
-## Codebase Overview
-
-- **app/main.py**: FastAPI app, endpoints, and metrics logger. Handles `/ocr` and `/metrics` endpoints, image validation, preprocessing, OCR, object detection, and DB logging.
-- **app/ocr.py**: Runs OCR using Tesseract and EasyOCR, returns cleaned and structured text.
-- **app/object_detection.py**: Loads YOLOv8 model, detects packaging objects, and guesses material type.
-- **app/db.py**: Async MongoDB integration using Motor, stores OCR results and analytics.
-- **app/utils.py**: Image validation, preprocessing, enhancement, and quality metrics (blur, brightness, contrast).
-- **app/text_processing.py**: Cleans and structures OCR text into product name, ingredients, features, and other info.
-- **app/logger.py**: Configures Loguru logging for the app.
-- **index.html**: Modern frontend UI for uploads and camera capture (see comments in file for JS logic).
-- **tests/**: Pytest-based API tests and sample files for validation.
+- YOLO model not loading:
+  - Ensure `yolov8n.pt` is present in project root or set `YOLO_WEIGHTS` env to the correct path.
 
 ---
+## Security & Hardening
 
-## Notes
-
-- For best results, upload clear, well-lit images of product labels.
-- If the image is blurry or dark, the API will attempt enhancement before OCR.
-- MongoDB is required for persistent storage; for stateless demo/testing, comment out DB calls in `app/db.py`.
-- YOLOv8 model weights (`yolov8n.pt`) must be present in the project root.
-- System dependencies for Tesseract and OpenCV may be required (see Dockerfile).
-
----
-
-# Green_Ai by GREEN DUKAN 
+- Runs as non-root in Docker; only required apt packages installed.
+- Avoids system OpenCV; uses headless build from pip to reduce attack surface and image size.
+- CORS is wide-open by default for dev; restrict `allow_origins` in production.
+- Validates image size (<=5MB by default) and decodes safely with Pillow/OpenCV/ImageIO fallbacks.
