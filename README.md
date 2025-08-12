@@ -12,6 +12,15 @@ An end-to-end pipeline for product label analysis using OCR, object detection, a
 - Speedups and stability for YOLO: thread-safe lazy loader, half-precision on CUDA, fused layers, vectorized box extraction, and adaptive input size.
 - Slimmer, more secure Docker images: headless OpenCV via pip, non-root user, optional GPU profile, healthcheck.
 - Production guidance: use multiple Uvicorn workers (2–4) for CPU-bound parallelism; concurrency guard for in-process tasks.
+- Sustainability analysis module and endpoint `/sustainability` leveraging GPT-3.5-turbo for evidence-based lifecycle assessments using ONLY OCR text (backend-only; API key in env).
+
+## Environment
+
+- OPENAI_API_KEY must be present in environment (.env or secret store). Never expose to frontend.
+- Optional overrides:
+  - `SUSTAINABILITY_MODEL` (default: gpt-3.5-turbo)
+  - `SUSTAINABILITY_TEMPERATURE` (default: 0.25)
+  - `SUSTAINABILITY_MAX_TOKENS` (default: 1536)
 
 ---
 
@@ -126,6 +135,7 @@ YOLO/EasyOCR will use CUDA automatically when available.
 ## API Endpoints
 
 - `POST /ocr` – Typed response: OCR text, detection list, quality metrics, latency.
+- `POST /sustainability` – Application/json: structured sustainability JSON with positives/negatives, explanations with sources, recommendations, and limited_analysis flag.
 - `GET /metrics` – Rolling averages for dashboard.
 - `GET /health` – Lightweight health info.
 

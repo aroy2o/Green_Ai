@@ -645,8 +645,28 @@
                 }
 
                 const data = await response.json();
-                displayResults(data);
 
+                // Now call /sustainability with the OCR text
+                let sustainabilityAnalysis = null;
+                if (data.ocr && data.ocr.full_text) {
+                    try {
+                        const sustResp = await fetch('/sustainability', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ text: data.ocr.full_text })
+                        });
+                        if (sustResp.ok) {
+                            sustainabilityAnalysis = await sustResp.json();
+                        } else {
+                            sustainabilityAnalysis = { error: 'Sustainability analysis failed.' };
+                        }
+                    } catch (e) {
+                        sustainabilityAnalysis = { error: 'Sustainability analysis failed.' };
+                    }
+                }
+                // Attach to data for displayResults
+                data.sustainability_analysis = sustainabilityAnalysis;
+                displayResults(data);
             } catch (error) {
                 showError(error.message);
             } finally {
@@ -674,7 +694,7 @@
 
         function displayResults(data) {
             resultSection.classList.remove('hidden');
-            ocrText.textContent = data.ocr.full_text || 'No text found.';
+            ocrText.textContent = (data.ocr && data.ocr.full_text) ? data.ocr.full_text : 'No text found.';
             const objects = data.object_detection && data.object_detection.length > 0
                 ? data.object_detection.map(obj => `${obj.class || obj.name} (${(obj.confidence * 100).toFixed(1)}%)`).join(', ')
                 : 'No objects detected.';
@@ -682,28 +702,55 @@
 
             sustainabilityResults.innerHTML = '';
             const analysis = data.sustainability_analysis;
-            if (analysis && !analysis.error) {
-                if (analysis.product_name) {
-                    const productNameEl = document.createElement('h4');
-                    productNameEl.innerHTML = `<strong>Product:</strong> ${analysis.product_name}`;
-                    sustainabilityResults.appendChild(productNameEl);
-                }
-                if (analysis.positive_insights && analysis.positive_insights.length > 0)
-                    sustainabilityResults.appendChild(createAccordion('Positive Insights', analysis.positive_insights));
-                if (analysis.negative_insights && analysis.negative_insights.length > 0)
-                    sustainabilityResults.appendChild(createAccordion('Negative Insights', analysis.negative_insights));
-                if (analysis.recommended_products && analysis.recommended_products.length > 0)
-                    sustainabilityResults.appendChild(createAccordion('Recommended Products', analysis.recommended_products));
-                if (analysis.explanations && analysis.explanations.length > 0)
-                    sustainabilityResults.appendChild(createAccordion('Explanations & Sources', analysis.explanations));
-            } else if (analysis && analysis.error) {
-                const errorEl = document.createElement('p');
-                errorEl.textContent = analysis.error;
-                sustainabilityResults.appendChild(errorEl);
-            } else {
+            if (!analysis) {
                 const noInfoEl = document.createElement('p');
                 noInfoEl.textContent = 'No sustainability analysis available.';
                 sustainabilityResults.appendChild(noInfoEl);
+                return;
+            }
+            if (analysis.error) {
+                const errorEl = document.createElement('p');
+                errorEl.innerHTML = `<strong>Error:</strong> ${analysis.error}`;
+                errorEl.style.color = 'red';
+                sustainabilityResults.appendChild(errorEl);
+            }
+            if (analysis.product_name) {
+                const productNameEl = document.createElement('h4');
+                productNameEl.innerHTML = `<strong>Product:</strong> ${analysis.product_name}`;
+                sustainabilityResults.appendChild(productNameEl);
+            }
+            if (analysis.score) {
+                const scoreEl = document.createElement('p');
+                scoreEl.innerHTML = `<strong>Score:</strong> ${analysis.score}`;
+                sustainabilityResults.appendChild(scoreEl);
+            }
+            if (analysis.summary) {
+                const summaryEl = document.createElement('p');
+                summaryEl.innerHTML = `<strong>Summary:</strong> ${analysis.summary}`;
+                sustainabilityResults.appendChild(summaryEl);
+            }
+            if (Array.isArray(analysis.positives) && analysis.positives.length > 0)
+                sustainabilityResults.appendChild(createAccordion('Positive Insights', analysis.positives));
+            if (Array.isArray(analysis.negatives) && analysis.negatives.length > 0)
+                sustainabilityResults.appendChild(createAccordion('Negative Insights', analysis.negatives));
+            if (Array.isArray(analysis.recommendations) && analysis.recommendations.length > 0)
+                sustainabilityResults.appendChild(createAccordion('Recommended Products', analysis.recommendations));
+            // Explanations (positives/negatives with sources)
+            if (analysis.explanations) {
+                if (Array.isArray(analysis.explanations.positives) && analysis.explanations.positives.length > 0) {
+                    const explPos = analysis.explanations.positives.map(e => `${e.title}: ${e.explanation} [Source: ${e.source_url}]`);
+                    sustainabilityResults.appendChild(createAccordion('Positive Explanations & Sources', explPos));
+                }
+                if (Array.isArray(analysis.explanations.negatives) && analysis.explanations.negatives.length > 0) {
+                    const explNeg = analysis.explanations.negatives.map(e => `${e.title}: ${e.explanation} [Source: ${e.source_url}]`);
+                    sustainabilityResults.appendChild(createAccordion('Negative Explanations & Sources', explNeg));
+                }
+            }
+            if (analysis.limited_analysis) {
+                const limitedEl = document.createElement('p');
+                limitedEl.innerHTML = '<strong>Limited Analysis:</strong> The provided text was not sufficient for a detailed sustainability report. See <a href="https://www.ewg.org/consumer-guides" target="_blank">EWG consumer guides</a>.';
+                limitedEl.style.color = '#b45309';
+                sustainabilityResults.appendChild(limitedEl);
             }
         }
 

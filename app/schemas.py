@@ -68,3 +68,33 @@ class HealthResponse(BaseModel):
     status: str
     cpu_percent: float
     rss_bytes: int
+
+
+# --- Sustainability analysis models ---
+class ExplanationItem(BaseModel):
+    title: str
+    explanation: str
+    source_url: str
+
+
+class Explanations(BaseModel):
+    positives: List[ExplanationItem] = Field(default_factory=list)
+    negatives: List[ExplanationItem] = Field(default_factory=list)
+
+
+class SustainabilityResponse(BaseModel):
+    product_name: str = ""
+    date: str
+    score: str = ""
+    summary: str = ""
+    positives: List[str] = Field(default_factory=list)
+    negatives: List[str] = Field(default_factory=list)
+    explanations: Explanations = Field(default_factory=Explanations)
+    recommendations: List[str] = Field(default_factory=list)
+    limited_analysis: bool = False
+    error: Optional[str] = None
+    # Do not include raw LLM traces or API keys in responses
+
+
+class SustainabilityRequest(BaseModel):
+    text: str

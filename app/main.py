@@ -16,6 +16,11 @@ import psutil
 import threading
 import os
 import collections
+from app.config import (
+    INFER_MAX_CONCURRENCY, DETECTION_TIMEOUT_SEC, OCR_TIMEOUT_SEC, ROI_OCR_TIMEOUT_SEC, MAX_IMAGE_SIDE,
+    get_runtime_config_snapshot, ANALYSIS_DATE
+)
+
 # Optional dotenv
 try:
     from dotenv import load_dotenv  # type: ignore
@@ -24,16 +29,35 @@ except Exception:  # pragma: no cover
         return False
 
 # --- New: Pydantic response models for strict schemas ---
-from app.schemas import OCRResponse, MetricsResponse, HealthResponse
+from app.schemas import OCRResponse, MetricsResponse, HealthResponse, SustainabilityRequest, SustainabilityResponse
 
 app = FastAPI(title="OCR Product Analysis Pipeline")
 
+# --- Middleware: attach/request correlation id ---
+from starlette.middleware.base import BaseHTTPMiddleware
+import uuid
+class RequestIDMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):  # type: ignore
+        rid = request.headers.get("X-Request-ID") or uuid.uuid4().hex[:16]
+        request.state.request_id = rid
+        start = time.time()
+        try:
+            response = await call_next(request)
+        except Exception as e:  # pragma: no cover
+            logger.exception(f"Unhandled error request_id={rid}")
+            raise
+        dur = (time.time() - start) * 1000.0
+        response.headers["X-Request-ID"] = rid
+        response.headers["X-Process-Time-ms"] = f"{dur:.1f}"
+        return response
+app.add_middleware(RequestIDMiddleware)
+
 # Global concurrency guard for heavy inference work
-_INFER_SEM = asyncio.Semaphore(int(os.getenv("MAX_INFER_CONCURRENCY", "4")))
-_DET_TIMEOUT = float(os.getenv("DETECTION_TIMEOUT_SEC", "6"))
-_OCR_TIMEOUT = float(os.getenv("OCR_TIMEOUT_SEC", "10"))
-_ROI_OCR_TIMEOUT = float(os.getenv("ROI_OCR_TIMEOUT_SEC", "4"))
-_MAX_IMG_SIDE = int(os.getenv("MAX_IMAGE_SIDE", "1920"))
+_INFER_SEM = asyncio.Semaphore(INFER_MAX_CONCURRENCY)
+_DET_TIMEOUT = DETECTION_TIMEOUT_SEC
+_OCR_TIMEOUT = OCR_TIMEOUT_SEC
+_ROI_OCR_TIMEOUT = ROI_OCR_TIMEOUT_SEC
+_MAX_IMG_SIDE = MAX_IMAGE_SIDE
 
 # CORS (adjust in production)
 app.add_middleware(
@@ -55,9 +79,16 @@ if os.path.isdir(public_dir):
 async def startup_event():
     # Load environment from .env if present and pre-warm optional heavy models
     try:
+        # Try project root first, then CWD
+        load_dotenv(os.path.join(project_root, ".env"))
         load_dotenv()
     except Exception:
         pass
+
+    # Helpful warning if GPT key missing
+    if not os.getenv("OPENAI_API_KEY"):
+        logger.warning("OPENAI_API_KEY not set. /sustainability will return an error until you configure it in a .env or environment variable.")
+
     # Warm up models in background to reduce first-request latency
     async def _warm():
         try:
@@ -318,3 +349,76 @@ class MetricsLogger:
 async def metrics():
     """Return rolling averages for dashboard charting."""
     return MetricsLogger.get_metrics()
+
+
+@app.get("/config")
+async def config_snapshot():
+    snap = get_runtime_config_snapshot()
+    # Do not expose secrets
+    return {k: v for k, v in snap.items() if not k.lower().endswith("key")}
+
+
+# ---- Sustainability analysis endpoint ----
+from app.sustainability_analysis import analyze_sustainability  # type: ignore
+from app.product_analysis import orchestrate_sustainability_analysis  # type: ignore
+from app.product_analysis import get_enrichment_cache_stats, clear_enrichment_cache  # type: ignore
+
+
+@app.post("/sustainability", response_model=SustainabilityResponse)
+async def sustainability_endpoint(payload: SustainabilityRequest):
+    """Run sustainability analysis over provided OCR text. Backend-only OpenAI call."""
+    text = (payload.text or "").strip()
+    if not text:
+        return SustainabilityResponse(
+            product_name="",
+            date=ANALYSIS_DATE,
+            score="",
+            summary="",
+            positives=[],
+            negatives=[],
+            recommendations=[],
+            explanations={"positives": [], "negatives": []},
+            limited_analysis=True,
+        )
+
+    result = await analyze_sustainability(text)
+
+    # Do not expose raw traces or API keys
+    result.pop("raw_markdown", None)
+    result.pop("api_key", None)
+
+    # Coerce to model
+    return SustainabilityResponse(**result)
+
+
+@app.post("/sustainability/enriched", response_model=SustainabilityResponse)
+async def sustainability_enriched_endpoint(payload: SustainabilityRequest):
+    """Full pipeline: OCR text -> name extraction -> web enrichment -> LLM analysis."""
+    text = (payload.text or "").strip()
+    if not text:
+        return SustainabilityResponse(
+            product_name="",
+            date=ANALYSIS_DATE,
+            score="",
+            summary="",
+            positives=[],
+            negatives=[],
+            recommendations=[],
+            explanations={"positives": [], "negatives": []},
+            limited_analysis=True,
+        )
+    result = await orchestrate_sustainability_analysis(text)
+    result.pop("raw_markdown", None)
+    result.pop("api_key", None)
+    # Strip auxiliary metadata not defined in schema
+    result.pop("_enrichment_meta", None)
+    return SustainabilityResponse(**result)
+
+
+@app.get("/enrichment/cache")
+async def enrichment_cache_stats():
+    return get_enrichment_cache_stats()
+
+@app.post("/enrichment/cache/clear")
+async def enrichment_cache_clear():
+    return clear_enrichment_cache()

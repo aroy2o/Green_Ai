@@ -16,3 +16,8 @@ python-dotenv
 scikit-image
 pillow-heif
 openai>=1.0.0,<2
+httpx
+beautifulsoup4
+lxml
+rapidfuzz
+spacy
